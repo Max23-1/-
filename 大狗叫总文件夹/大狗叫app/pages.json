@@ -1,0 +1,54 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "大狗叫",
+        "navigationBarBackgroundColor": "#ff6b35",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/about/about",
+      "style": {
+        "navigationBarTitleText": "大狗介绍",
+        "navigationBarBackgroundColor": "#ff6b35",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/record/record",
+      "style": {
+        "navigationBarTitleText": "叫声记录",
+        "navigationBarBackgroundColor": "#ff6b35",
+        "navigationBarTextStyle": "white"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "大狗叫",
+    "navigationBarBackgroundColor": "#ff6b35",
+    "backgroundColor": "#fff3e0"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#ff6b35",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "大狗叫"
+      },
+      {
+        "pagePath": "pages/about/about",
+        "text": "介绍"
+      },
+      {
+        "pagePath": "pages/record/record",
+        "text": "记录"
+      }
+    ]
+  }
+}

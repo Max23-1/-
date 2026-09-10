@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大狗叫 - 预览效果</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(180deg, #fff3e0 0%, #ffe0b2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 80px;
+        }
+
+        /* 顶部标题栏 */
+        .navbar {
+            width: 100%;
+            background: #ff6b35;
+            color: #fff;
+            text-align: center;
+            padding: 14px 0;
+            font-size: 18px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        .page { display: none; width: 100%; max-width: 480px; padding: 24px 20px; }
+        .page.active { display: block; }
+
+        /* ===== 页面1：大狗叫 ===== */
+        .header { text-align: center; margin-bottom: 10px; }
+        .header .title { font-size: 32px; font-weight: bold; color: #e8590c; }
+        .header .subtitle { font-size: 14px; color: #8d6e63; margin-top: 6px; }
+
+        .dog-area {
+            position: relative;
+            width: 300px; height: 300px;
+            margin: 20px auto 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .dog-img {
+            width: 260px; height: 260px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,.15);
+            cursor: pointer;
+            background: #fff;
+            user-select: none;
+        }
+        .particle {
+            position: absolute;
+            left: 50%; top: 50%;
+            font-weight: bold;
+            z-index: 10;
+            pointer-events: none;
+            animation: fly .72s ease-out forwards;
+        }
+        @keyframes fly {
+            0%   { transform: translate(-50%,-50%) scale(.4); opacity: 0; }
+            20%  { opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.35); opacity: 0; }
+        }
+
+        .tip { text-align: center; font-size: 13px; color: #8d6e63; margin: 8px 0; }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            font-size: 17px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+        .btn-primary { background: #ff6b35; color: #fff; }
+        .btn-ghost   { background: #fff; color: #e8590c; border: 2px solid #ff6b35; }
+
+        /* ===== 页面2：介绍 ===== */
+        .card {
+            background: #fff; border-radius: 20px; padding: 20px;
+            text-align: center; box-shadow: 0 6px 18px rgba(0,0,0,.08);
+        }
+        .card img { width: 200px; height: 200px; border-radius: 16px; }
+        .card .name { font-size: 24px; font-weight: bold; color: #e8590c; margin-top: 12px; }
+        .card .desc { font-size: 14px; color: #8d6e63; margin-top: 8px; }
+        .info { background: #fff; border-radius: 20px; margin-top: 16px; padding: 6px 20px; box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+        .info-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #f0f0f0; }
+        .info-item:last-child { border-bottom: none; }
+        .info-label { font-size: 14px; color: #fff; background: #ff6b35; padding: 4px 14px; border-radius: 16px; margin-right: 14px; }
+        .info-value { font-size: 14px; color: #5d4037; }
+
+        /* ===== 页面3：记录 ===== */
+        .stat-card { background: #fff; border-radius: 20px; padding: 40px 0; text-align: center; box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+        .stat-num { font-size: 64px; font-weight: bold; color: #ff6b35; }
+        .stat-label { font-size: 14px; color: #8d6e63; display: block; margin-top: 8px; }
+        .actions { display: flex; gap: 12px; margin-top: 20px; }
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .actions .btn { flex: 1; margin-top: 0; }
+
+        /* ===== 底部 tabBar ===== */
+        .tabbar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #fff; display: flex;
+            border-top: 1px solid #eee;
+            z-index: 100;
+        }
+        .tab {
+            flex: 1; text-align: center; padding: 12px 0;
+            font-size: 14px; color: #999; cursor: pointer;
+        }
+        .tab.active { color: #ff6b35; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="navbar" id="navTitle">大狗叫</div>
+
+    <!-- 页面1：大狗叫 -->
+    <div class="page active" id="page-index">
+        <div class="header">
+            <div class="title">🐶 大狗叫</div>
+            <div class="subtitle">点一下大狗，汪汪叫！</div>
+        </div>
+        <div class="dog-area" id="dogArea">
+            <img class="dog-img" id="dogImg" src="大狗1.webp" alt="大狗" onclick="bark()">
+        </div>
+        <div class="tip">👆 点击大狗 或 下面的按钮，让它叫！</div>
+        <button class="btn btn-primary" onclick="bark()">🐕 叫一声！</button>
+        <button class="btn btn-ghost" onclick="switchTab('about')">📖 大狗介绍</button>
+    </div>
+
+    <!-- 页面2：介绍 -->
+    <div class="page" id="page-about">
+        <div class="card">
+            <img src="大狗1.webp" alt="大狗">
+            <div class="name">大狗</div>
+            <div class="desc">这是一只憨态可掬的大狗，点击它就会汪汪叫！</div>
+        </div>
+        <div class="info">
+            <div class="info-item"><span class="info-label">品种</span><span class="info-value">大黄狗</span></div>
+            <div class="info-item"><span class="info-label">特点</span><span class="info-value">叫声洪亮、爱吃骨头</span></div>
+            <div class="info-item"><span class="info-label">技能</span><span class="info-value">点击会叫、还会弹出"叫"字</span></div>
+        </div>
+        <button class="btn btn-primary" onclick="switchTab('index')">🐶 去找大狗玩</button>
+    </div>
+
+    <!-- 页面3：记录 -->
+    <div class="page" id="page-record">
+        <div class="stat-card">
+            <span class="stat-num" id="barkCount">0</span>
+            <span class="stat-label">累计叫声次数</span>
+        </div>
+        <div class="actions">
+            <button class="btn btn-primary" onclick="refresh()">🔄 刷新</button>
+            <button class="btn btn-danger" onclick="reset()">🗑 清零</button>
+        </div>
+        <div class="tip">去「大狗叫」页点击大狗，这里的次数就会增加哦～</div>
+    </div>
+
+    <!-- 底部 tabBar -->
+    <div class="tabbar">
+        <div class="tab active" data-tab="index" onclick="switchTab('index')">大狗叫</div>
+        <div class="tab" data-tab="about" onclick="switchTab('about')">介绍</div>
+        <div class="tab" data-tab="record" onclick="switchTab('record')">记录</div>
+    </div>
+
+    <!-- 叫.mp3 的内嵌数据：file:// 下浏览器禁止 fetch，Web Audio 只能从这里取音频 -->
+    <script src="预览音频数据.js"></script>
+    <script>
+        // ===== 狗叫音频 =====
+        // 单点：原版狗叫；连点：一直用 大狗.mp3；大狗放完后，由 叫.mp3 收尾
+        var audioNormal = new Audio('大狗叫_爱给网_aigei_com.mp3');  // 单点（正常一声）
+        var audioDog = new Audio('大狗.mp3');                        // 连点过程中
+        var audioRush = new Audio('叫.mp3');                         // 收尾（Web Audio 用不了时的退路）
+
+        // 大狗按"磁带变速"播放：速率就是音调，越快音调越高
+        audioDog.preservesPitch = false;
+        audioDog.webkitPreservesPitch = false;
+        audioDog.mozPreservesPitch = false;
+        // 退路用的 audioRush：拉长时不改变音调（时间拉伸）
+        audioRush.preservesPitch = true;
+        audioRush.webkitPreservesPitch = true;
+        audioRush.mozPreservesPitch = true;
+
+        var dogImg = document.getElementById('dogImg');
+        var dogArea = document.getElementById('dogArea');
+        var timer = null;
+        var colors = ['#ff6b35','#e74c3c','#f39c12','#d63031','#e17055','#ff9f43','#c0392b','#fd9644'];
+
+        // 音量：连点越多越响（正常一声 0.7，封顶 1.0）
+        var VOL_BASE = 0.7;    // 正常一声的音量
+        var VOL_STEP = 0.1;    // 每多连点一次提高的音量
+        var VOL_MAX = 1.0;     // 音量上限（HTML5 音量范围 0~1）
+
+        // ===== 前面（大狗）阶段：不拉长，连点越多音调越高、越响 =====
+        var DOG_FALLBACK_MS = 1200;   // 大狗.mp3 的兜底复位时间（正常由 ended 触发）
+        var PITCH_BASE = 1.0;         // 连点第 2 声的音调（1 = 原音）
+        var PITCH_STEP = 0.08;        // 每多连点一次升高的音调
+        var PITCH_MAX = 1.6;          // 音调上限
+
+        // ===== 后面（叫）阶段：音调比大狗再高 0.2、音量再高一点，并拉长（封顶 1.5 秒）=====
+        var RUSH_PITCH_UP = 0.2;      // 叫的音调 = 大狗音调 + 0.2
+        var RUSH_VOL_BONUS = 0.1;     // 收尾这一声比大狗响一点点
+        var RUSH_TARGET_MIN = 1.0;    // 收尾这一声的目标时长（秒）
+        var RUSH_TARGET_STEP = 0.25;  // 每多连点一次，收尾再 +0.25 秒
+        var RUSH_TARGET_MAX = 1.5;    // 收尾这一声的长度封顶（秒）
+        var RUSH_GAP_MS = 200;        // 大狗放完 → 停顿 0.2 秒 → 再叫
+        var rushDuration = 0.552;     // 叫.mp3 的时长（秒），加载后会自动更新
+
+        var burstCount = 0;      // 这一连串点击的次数（0 = 当前没在响）
+        var isPlaying = false;   // 这一连串是否还在响
+        var activeCtx = null;    // 当前真正在响的那个音频（用来忽略 stop() 的误回调）
+        var resetTimer = null;   // 兜底：一声结束后复位
+        var gapTimer = null;     // 大狗与叫之间那 0.2 秒停顿的计时器
+
+        // 叫.mp3 的时长（用来算该放多慢）
+        audioRush.addEventListener('loadedmetadata', function () {
+            if (audioRush.duration) rushDuration = audioRush.duration;
+        });
+
+        // 当前这一串点击该用的音量 / 音调
+        function dogVolume() {
+            return Math.min(VOL_BASE + (burstCount - 1) * VOL_STEP, VOL_MAX);
+        }
+        function dogPitch() {
+            return Math.min(PITCH_BASE + (burstCount - 2) * PITCH_STEP, PITCH_MAX);
+        }
+
+        // ===== Web Audio：给"叫"做 变调 + 拉长 =====
+        // 普通播放做不到这两件事同时发生（加速=升调=变短），所以离线做颗粒合成
+        var audioCtx = null;
+        var rushPCM = null;      // 解码后的 叫.mp3
+        var rushSource = null;   // 当前正在响的"叫"
+        var procCache = {};      // 处理结果缓存，避免重复计算
+
+        function ensureAudioCtx() {
+            if (audioCtx) return audioCtx;
+            var AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return null;
+            try { audioCtx = new AC(); } catch (e) { audioCtx = null; }
+            return audioCtx;
+        }
+
+        function base64ToBuffer(b64) {
+            var bin = atob(b64);
+            var bytes = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return bytes.buffer;
+        }
+
+        // 页面一打开就把 叫.mp3 解码好
+        (function decodeRushPCM() {
+            var ctx = ensureAudioCtx();
+            if (!ctx || !window.RUSH_AUDIO_B64) return;
+            try {
+                ctx.decodeAudioData(base64ToBuffer(window.RUSH_AUDIO_B64),
+                    function (buf) { rushPCM = buf; },
+                    function () { rushPCM = null; });
+            } catch (e) { rushPCM = null; }
+        })();
+
+        // 颗粒合成：重叠相加 + 线性插值重采样
+        //   pitch   = 音调倍数（1 = 原音）
+        //   stretch = 时长倍数（1 = 原长）
+        // 两者互相独立，所以能同时"升调"和"拉长"
+        function renderVoice(pitch, stretch) {
+            var ctx = ensureAudioCtx();
+            if (!ctx || !rushPCM) return null;
+            var key = pitch.toFixed(3) + '|' + stretch.toFixed(3);
+            if (procCache[key]) return procCache[key];
+
+            var sr = rushPCM.sampleRate;
+            var inLen = rushPCM.length;
+            var outLen = Math.max(1, Math.floor(inLen * stretch));
+            var out = ctx.createBuffer(rushPCM.numberOfChannels, outLen, sr);
+            var grain = Math.max(16, Math.floor(sr * 0.05));  // 输出颗粒 50ms
+            var Hs = Math.max(1, Math.floor(grain / 2));      // 合成跳距
+            var Ha = Hs / stretch;                            // 分析跳距
+            var win = new Float32Array(grain);
+            for (var i = 0; i < grain; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / grain);
+
+            for (var ch = 0; ch < rushPCM.numberOfChannels; ch++) {
+                var src = rushPCM.getChannelData(ch);
+                var dst = out.getChannelData(ch);
+                var norm = new Float32Array(outLen);          // 窗和，用来归一化音量
+                for (var o0 = 0; o0 < outLen; o0 += Hs) {
+                    var a0 = (o0 / Hs) * Ha;                  // 这一颗粒在源里的起点
+                    var n = Math.min(grain, outLen - o0);
+                    for (var j = 0; j < n; j++) {
+                        var p = a0 + j * pitch;               // 按音调重采样
+                        var i0 = Math.floor(p);
+                        if (i0 < 0 || i0 + 1 >= inLen) continue;
+                        var frac = p - i0;
+                        var s = src[i0] * (1 - frac) + src[i0 + 1] * frac;
+                        dst[o0 + j] += s * win[j];
+                        norm[o0 + j] += win[j];
+                    }
+                }
+                for (var o = 0; o < outLen; o++) if (norm[o] > 1e-4) dst[o] /= norm[o];
+            }
+
+            if (Object.keys(procCache).length > 24) procCache = {};   // 简单限容
+            procCache[key] = out;
+            return out;
+        }
+
+        // 播放处理好的"叫"；返回 false 表示 Web Audio 用不了，退回普通播放
+        function playVoice(pitch, stretch, volume) {
+            var ctx = ensureAudioCtx();
+            var buf = renderVoice(pitch, stretch);
+            if (!ctx || !buf) return false;
+            if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
+            stopVoice();
+            var gain = ctx.createGain();
+            gain.gain.value = volume;
+            gain.connect(ctx.destination);
+            var src = ctx.createBufferSource();
+            src.buffer = buf;
+            src.connect(gain);
+            src.onended = function () { if (activeCtx === src) endBurst(); };
+            src.start();
+            rushSource = src;
+            activeCtx = src;
+            return true;
+        }
+
+        function stopVoice() {
+            if (rushSource) {
+                try { rushSource.stop(); } catch (e) {}
+                rushSource = null;
+            }
+        }
+
+        // 兜底：到时间还没收到结束回调，也复位
+        function armReset(ms) {
+            if (resetTimer) clearTimeout(resetTimer);
+            resetTimer = setTimeout(endBurst, ms + 400);
+        }
+
+        // 先清空"当前音源"再停，避免 pause() 误触发结束回调
+        function stopAll() {
+            activeCtx = null;
+            if (gapTimer) { clearTimeout(gapTimer); gapTimer = null; }   // 停顿期间又点了 → 取消停顿
+            stopVoice();
+            [audioNormal, audioDog, audioRush].forEach(function (a) {
+                a.pause();
+                a.currentTime = 0;
+            });
+        }
+
+        // 收尾：叫.mp3 —— 音调比大狗再高 0.2、音量再高一点点，并拉长（封顶 1.5 秒）
+        function playRush() {
+            stopAll();
+            var target = Math.min(RUSH_TARGET_MIN + (burstCount - 2) * RUSH_TARGET_STEP, RUSH_TARGET_MAX);
+            var stretch = Math.max(target / rushDuration, 1);   // 拉长倍数
+            var pitch = dogPitch() + RUSH_PITCH_UP;             // 音调 = 大狗 + 0.2
+            var vol = Math.min(dogVolume() + RUSH_VOL_BONUS, VOL_MAX);
+
+            if (playVoice(pitch, stretch, vol)) {   // Web Audio：升调和拉长一起做
+                armReset(target * 1000);
+                return;
+            }
+            // 退路：没有 Web Audio，只能"拉长但升不了调"
+            audioRush.volume = vol;
+            audioRush.playbackRate = 1 / stretch;
+            audioRush.play();
+            activeCtx = audioRush;
+            armReset(target * 1000);
+        }
+
+        // 大狗放完 → 先停 0.2 秒，再用 叫 收尾（这 0.2 秒里静音）
+        function armRush() {
+            if (resetTimer) { clearTimeout(resetTimer); resetTimer = null; }
+            activeCtx = null;                       // 停顿期间不响，忽略其它结束回调
+            gapTimer = setTimeout(function () {
+                gapTimer = null;
+                if (isPlaying && burstCount >= 2) playRush();
+            }, RUSH_GAP_MS);
+            armReset(RUSH_GAP_MS + RUSH_TARGET_MAX * 1000);   // 兜底
+        }
+
+        // 一声播完 / 出错 → 结束这一连串，下次点击重新算"正常一声"
+        function endBurst() {
+            if (resetTimer) { clearTimeout(resetTimer); resetTimer = null; }
+            if (gapTimer) { clearTimeout(gapTimer); gapTimer = null; }
+            activeCtx = null;
+            isPlaying = false;
+            burstCount = 0;
+            audioNormal.volume = VOL_BASE;
+            audioDog.volume = VOL_BASE;
+            audioRush.volume = VOL_BASE;
+        }
+
+        // 单点：原版狗叫放完就结束（逻辑不变，不用 叫 收尾）
+        audioNormal.addEventListener('ended', function () {
+            if (activeCtx === audioNormal) endBurst();
+        });
+        audioNormal.addEventListener('error', function () {
+            if (activeCtx === audioNormal) endBurst();
+        });
+
+        // 大狗放完 → 如果这一串是"连点"（点过至少两次），停顿 0.2 秒后用 叫 收尾
+        audioDog.addEventListener('ended', function () {
+            if (activeCtx !== audioDog) return;
+            if (burstCount >= 2) armRush(); else endBurst();
+        });
+        audioDog.addEventListener('error', function () {
+            if (activeCtx === audioDog) endBurst();
+        });
+
+        audioRush.addEventListener('ended', function () {
+            if (activeCtx === audioRush) endBurst();
+        });
+        audioRush.addEventListener('error', function () {
+            if (activeCtx === audioRush) endBurst();
+        });
+
+        // 核心：点击大狗 → 切图 + 播音频 + 弹射"叫"字 + 计数
+        function bark() {
+            dogImg.src = '大狗叫.webp';            // 切换成叫的图片
+
+            // 单点 → 原版狗叫，完了就结束（逻辑不变）
+            // 连点 → 一直用 大狗.mp3，音调逐次升高、音量逐次提高；大狗放完后由 叫.mp3 收尾
+            burstCount = isPlaying ? burstCount + 1 : 1;
+            isPlaying = true;
+            stopAll();
+
+            if (burstCount === 1) {
+                // 单点：原版狗叫，原样播放
+                audioNormal.volume = VOL_BASE;
+                audioNormal.play();
+                activeCtx = audioNormal;
+                armReset(1200);
+            } else {
+                // 连点：大狗.mp3，不拉长；音量逐次提高、音调逐次升高
+                audioDog.volume = dogVolume();
+                audioDog.playbackRate = dogPitch();
+                audioDog.play();
+                activeCtx = audioDog;
+                armReset(DOG_FALLBACK_MS);
+            }
+
+            spawnParticles();                       // 弹射"叫"字
+
+            var count = parseInt(localStorage.getItem('barkCount') || '0') + 1;
+            localStorage.setItem('barkCount', count);
+
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(function () {        // 0.8 秒后还原
+                dogImg.src = '大狗1.webp';
+            }, 800);
+        }
+
+        // 向四周弹射"叫"字
+        function spawnParticles() {
+            var count = 14;
+            for (var i = 0; i < count; i++) {
+                var angle = (Math.PI * 2 * i) / count + Math.random() * 0.5;
+                var dist = 70 + Math.random() * 110;
+                var p = document.createElement('div');
+                p.className = 'particle';
+                p.textContent = '叫';
+                p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+                p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+                p.style.color = colors[i % colors.length];
+                p.style.fontSize = (22 + Math.random() * 18) + 'px';
+                dogArea.appendChild(p);
+                setTimeout(function () { p.remove(); }, 750);
+            }
+        }
+
+        // tab 切换
+        function switchTab(name) {
+            document.querySelectorAll('.page').forEach(function (el) { el.classList.remove('active'); });
+            document.querySelectorAll('.tab').forEach(function (el) { el.classList.remove('active'); });
+            document.getElementById('page-' + name).classList.add('active');
+            document.querySelector('.tab[data-tab="' + name + '"]').classList.add('active');
+            document.getElementById('navTitle').textContent =
+                (name === 'index') ? '大狗叫' : (name === 'about') ? '大狗介绍' : '叫声记录';
+            if (name === 'record') refresh();
+        }
+
+        // 记录页：刷新 / 清零
+        function refresh() {
+            document.getElementById('barkCount').textContent = parseInt(localStorage.getItem('barkCount') || '0');
+        }
+        function reset() {
+            if (confirm('确定要清零叫声记录吗？')) {
+                localStorage.setItem('barkCount', '0');
+                refresh();
+            }
+        }
+    </script>
+</body>
+</html>
